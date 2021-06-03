@@ -104,7 +104,6 @@ public class LinkedList<E> implements List<E>{
             tmp.setNext(null);
             if(index == effectiveSize -1)
                 last = tmp;
-            System.out.println(" remove at index: " + index + " is: " + tmp.getContent());
         }
         effectiveSize--;
         return removed;
@@ -151,7 +150,6 @@ public class LinkedList<E> implements List<E>{
             last = nNode;
         }else {
             var node = getNodeAt(index-1);
-            System.out.println("set Node: " + node.getContent());
             detached = node.getNext().getContent();
             nNode.setNext(node.getNext().getNext());
             node.setNext(nNode);
@@ -185,6 +183,7 @@ public class LinkedList<E> implements List<E>{
         // tipo nodo son package-private. y nadie más tiene referencia a estos.
         header = null;
         last = null;
+        // System.gc();
     }
 
     private NodeSimple<E> getNodeAt(int index) {
@@ -209,7 +208,6 @@ public class LinkedList<E> implements List<E>{
         StringBuilder str = new StringBuilder("[");
         var tmp = header;
         for (int i = 0; i < effectiveSize; i++) {
-            System.out.println("i: " + i + "elemnt: " + tmp.getContent());
             str.append(tmp.getContent());
             if (i != effectiveSize -1)
                 str.append(", ");
