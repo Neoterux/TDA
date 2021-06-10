@@ -7,7 +7,7 @@ package com.neoterux.tda.list;
  *
  * @param <E> Tipo de dato que almacena
  */
-public interface MutableList<E> {
+public interface MutableList<E> extends List<E> {
 
     void keepOnly(int from, int to);
 
