@@ -1,4 +1,4 @@
-package com.neoterux.tda.list.content;
+package com.neoterux.tda.containers;
 
 public abstract class Node<E> {
 
