@@ -1,26 +1,36 @@
 package com.neoterux.tda.list;
 
-public interface List<E> {
+import java.util.Comparator;
 
-    public boolean addFirst(E e);
 
-    public boolean addLast(E e);
+public interface List<E> extends Iterable<E> {
 
-    public void add(int index, E element);
+    boolean addFirst(E e);
 
-    public E remove(int index);
+    boolean addLast(E e);
 
-    public E get(int index);
+    void add(int index, E element);
 
-    public E set(int index, E element);
+    E remove(int index);
 
-    public int size();
+    E removeFirst();
 
-    public boolean isEmpty();
+    E removeLast();
 
-    public void clear();
+    E get(int index);
 
-    @Override
-    public String toString();
+    E set(int index, E element);
+
+    int size();
+
+    boolean isEmpty();
+
+    void clear();
+
+    List<E> findAll(E target);
+
+    List<E> findAll(E target, Comparator<E> cmp);
+
+    List<E> intersectionWith(List<E> target);
 
 }
