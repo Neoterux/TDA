@@ -43,6 +43,12 @@ public class DoubleNode<E> extends Node<E> {
         this.previous = previous;
     }
 
+    @Override
+    public void clean() {
+        this.next = null;
+        this.previous = null;
+    }
+
     public void setNext(DoubleNode<E> next) {
         this.next = next;
     }

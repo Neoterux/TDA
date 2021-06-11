@@ -20,4 +20,6 @@ public abstract class Node<E> {
     public abstract Node<E> genNext(E element);
 
     public abstract Node<E> genPrevius(E element);
+
+    public abstract void clean();
 }

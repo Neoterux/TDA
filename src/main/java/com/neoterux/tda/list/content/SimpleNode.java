@@ -4,7 +4,7 @@ import com.neoterux.tda.containers.Node;
 
 public class SimpleNode<E> extends Node<E> {
 
-    SimpleNode(E element) {
+    public SimpleNode(E element) {
         this(element, null);
     }
     public SimpleNode (E element, SimpleNode<E> next) {
@@ -19,6 +19,11 @@ public class SimpleNode<E> extends Node<E> {
             nNode.next = this.next;
         this.next = nNode;
         return nNode;
+    }
+
+    @Override
+    public void clean() {
+        this.next = null;
     }
 
     @Override
