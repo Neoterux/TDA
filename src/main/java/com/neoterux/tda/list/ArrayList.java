@@ -1,18 +1,15 @@
 package com.neoterux.tda.list;
 
-import com.neoterux.tda.collection.IterableCollection;
-import com.neoterux.tda.collection.SearchableCollection;
-
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.Objects;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 /**
  * Implementación estática del TDA List
  *
  * @param <E> tipo de dato que va a almacenar el ArrayList
  */
-public class ArrayList<E> implements List<E>, SearchableCollection<E>, IterableCollection<E>, MutableList<E> {
+public class ArrayList<E> implements MutableList<E> {
 
     /**
      * Array que contiene los elementos del ArrayList.
@@ -56,11 +53,17 @@ public class ArrayList<E> implements List<E>, SearchableCollection<E>, IterableC
      */
     @Override
     public boolean addFirst(E e) {
-
+        if(e == null)
+            return false;
         if (effectiveSize == capacity) {
             addCapacity();
         }
-        return false;
+        for (int i = effectiveSize - 1; i >0; i--) {
+            elements[i+1] = elements[i];
+        }
+        elements[0] = e;
+        effectiveSize++;
+        return true;
     }
 
     /**
@@ -71,6 +74,8 @@ public class ArrayList<E> implements List<E>, SearchableCollection<E>, IterableC
      */
     @Override
     public boolean addLast(E e) {
+        if (e == null)
+            return false;
         if (effectiveSize == capacity)
             addCapacity();
         if(isEmpty()) {
@@ -79,7 +84,7 @@ public class ArrayList<E> implements List<E>, SearchableCollection<E>, IterableC
             elements[effectiveSize] = e;
         }
         effectiveSize++;
-        return false;
+        return true;
     }
 
     /**
@@ -91,6 +96,9 @@ public class ArrayList<E> implements List<E>, SearchableCollection<E>, IterableC
      */
     @Override
     public void add(int index, E element) {
+        if(element == null)
+            return;
+
         if (index < 0 || index >= effectiveSize) {
             throw new IndexOutOfBoundsException("Index not valid");
         }
@@ -124,6 +132,38 @@ public class ArrayList<E> implements List<E>, SearchableCollection<E>, IterableC
             fixArraySpace(elements);
         effectiveSize--;
         return obj;
+    }
+
+    /**
+     * Remueve el primer elemento de la lista.
+     *
+     * @return el elemento removido
+     */
+    @Override
+    public E removeFirst() {
+        if (effectiveSize == 0)
+            return null;
+
+        E old = elements[0];
+        elements[0] = null;
+        fixArraySpace(elements);
+        effectiveSize--;
+        return old;
+    }
+
+    /**
+     * Remueve el último elemento que se encuentra en la lista.
+     *
+     * @return el elemento removido de la lista.
+     */
+    @Override
+    public E removeLast() {
+        if (effectiveSize == 0)
+            return null;
+
+        E old = elements[--effectiveSize];
+        elements[effectiveSize] = null;
+        return old;
     }
 
     /**
@@ -171,6 +211,9 @@ public class ArrayList<E> implements List<E>, SearchableCollection<E>, IterableC
         return effectiveSize == 0;
     }
 
+    /**
+     * Borra los elementos de la lista.
+     */
     @Override
     public void clear() {
         for (int i = 0; i < effectiveSize; i++) {
@@ -244,8 +287,16 @@ public class ArrayList<E> implements List<E>, SearchableCollection<E>, IterableC
         return representation.toString();
     }
 
+    /**
+     * Añade capacidad al {@link ArrayList#elements}, cada vez que se ejecuta la capacidad
+     * del array se ve aumentada x2.
+     */
     private void addCapacity() {
         E[] backup = elements;
+        /* other option, more efficient is:
+        elements = Arrays.copyOf(elements, capacity*2);
+        capacity = elements.length;
+         */
         E[] newArr = (E[]) new Object[capacity<<1];
         for (int i = 0; i < backup.length; i++) {
             newArr[i] = backup[i];
@@ -253,59 +304,6 @@ public class ArrayList<E> implements List<E>, SearchableCollection<E>, IterableC
         capacity = newArr.length;
         elements = newArr;
 
-    }
-
-    /*
-     * Busca el objeto especificado dentro del array de acuerdo a su índice.
-     * Tiene una dificultad de O(1).
-     *
-     * @param index indice del objeto a buscar.
-     * @return el objeto a buscar, null si no se encuentra
-     */
-//    @Override
-//    public E findObject(int index) {
-//        if(index < 0 || index >= effectiveSize)
-//            throw new IndexOutOfBoundsException("index more than ArrayList size");
-//        return elements[index];
-//    }
-
-    /**
-     * Localiza el objeto especificado entro del array interno y devuelve su índice.
-     * En el peor caso su dificultad es de O(n).
-     * En caso de que haya 2 referencias a un mismo objeto dentro del array, devuelve la primera
-     * ocurrencia del objeto a buscar.
-     *
-     * @param object objeto a localizar
-     * @return el índice del objeto, en caso de no encontrarlo devuelve -1.
-     */
-    @Override
-    public int findIndex(E object) {
-        for(int i = 0; i < effectiveSize; i++){
-            // Search the same instance or equals method defined by objects.
-            if(elements[i] == object || elements[i].equals(object)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    /**
-     * Recorre toda la lista y aplica a cada elemento la acción especificada.
-     *
-     * @param action acción a realizar con los elementos.
-     */
-    @Override
-    public void forEach(final Consumer<E> action) {
-        for(int i = 0; i < effectiveSize; i++) {
-            action.accept(elements[i]);
-        }
-    }
-
-    @Override
-    public void indexForEach(final BiConsumer<Integer, E> action) {
-        for(int i = 0; i < effectiveSize; i++) {
-            action.accept(i, elements[i]);
-        }
     }
 
     /**
@@ -347,4 +345,86 @@ public class ArrayList<E> implements List<E>, SearchableCollection<E>, IterableC
         }
         fixArraySpace(elements);
     }
+
+    /**
+     * Genera un nuevo objeto iterador, para recorrer la lista de manera externa.
+     *
+     * @return un nuevo objeto iterador
+     */
+    @Override
+    public Iterator<E> iterator() {
+        // TODO: test if works
+        return new Iterator<>() {
+            int pointer = 0;
+
+            @Override
+            public boolean hasNext() {
+                return pointer < effectiveSize - 1;
+            }
+
+            @Override
+            public E next() {
+                if (pointer >= effectiveSize)
+                    return null;
+                return elements[pointer++];
+            }
+        };
+    }
+
+    /**
+     * Busca elementos dentro de la lista mediante {@code target.equals(element)} y devuelve una nueva lista
+     * con los elementos que coincidan.
+     *
+     * @param target elemento a comparar.
+     * @return Lista con elementos iguales.
+     */
+    @Override
+    public List<E> findAll(E target) {
+        // TODO: implement and test
+        return findAll(target, (t, comp)-> (t.equals(comp))? 0: 1);
+    }
+
+    /**
+     * Busca elementos dentro de la lista de acuerdo a lo especificado en el comparador.
+     * Los elementos que retornen 0 se ingresaran a la nueva lista.
+     *
+     * @param target objeto a comparar con los elementos de la lista.
+     * @param cmp comparador.
+     * @return lista con elementos de acuerdo al resultado del comparador.
+     */
+    @Override
+    public List<E> findAll(E target, Comparator<E> cmp) {
+        // TODO: implement and test
+        List<E> tmp = new ArrayList<>();
+        for (int i = 0; i < effectiveSize; i++) {
+            if (cmp.compare(target, elements[i]) == 0)
+                tmp.addLast(elements[i]);
+        }
+        return tmp;
+    }
+
+    /**
+     * Genera una lista con elementos que sean iguales entre esta lista,
+     * y la lista {@literal target}. La igualdad se evalua mediante el método equals
+     * {@code element.equals(target_element);}.
+     *
+     * @param target lista a comparar objetos
+     * @return Lista con los objetos compartidos entre ambas listas.
+     */
+    @Override
+    public List<E> intersectionWith(List<E> target) {
+        // TODO: implement and test
+        List<E> tmp = new ArrayList<>();
+        for(var element : this){
+            // No queremos continuar si la lista llega a su fin, es decir cuando es null
+            if (element == null)
+                break;
+            for (var targetElement: target){
+                if (element.equals(targetElement))
+                    tmp.addLast(targetElement);
+            }
+        }
+        return tmp;
+    }
+
 }
