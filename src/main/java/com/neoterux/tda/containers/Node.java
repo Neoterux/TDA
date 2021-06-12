@@ -1,15 +1,13 @@
 package com.neoterux.tda.containers;
 
-public abstract class Node<E> {
+public abstract class Node<E, N extends Node> {
 
     protected E content;
-    protected Node<E> next;
+    protected N next;
 
-    public Node<E> getNext() {
-        return next;
-    }
+    public N getNext() { return  next; }
 
-    public void setNext(Node<E> next) {
+    public void setNext(N next) {
         this.next = next;
     }
 
@@ -17,9 +15,9 @@ public abstract class Node<E> {
         return content;
     }
 
-    public abstract Node<E> genNext(E element);
+    public abstract N genNext(E element);
 
-    public abstract Node<E> genPrevius(E element);
+    protected abstract N genPrevius(E element);
 
     public abstract void clean();
 }
