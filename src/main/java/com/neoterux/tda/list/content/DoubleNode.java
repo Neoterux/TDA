@@ -2,10 +2,7 @@ package com.neoterux.tda.list.content;
 
 import com.neoterux.tda.containers.Node;
 
-public class DoubleNode<E> extends Node<E> {
-
-    private DoubleNode<E> next;
-
+public class DoubleNode<E> extends Node<E, DoubleNode<E>> {
     private DoubleNode<E> previous;
 
     public DoubleNode(E element) { this(element, null); }
@@ -20,7 +17,7 @@ public class DoubleNode<E> extends Node<E> {
 
     @Override
     public DoubleNode<E> genNext(E element) {
-        var nNode = new DoubleNode<>(element, this, this.next);
+        var nNode = new DoubleNode<E>(element, this, this.next);
 
         if(this.next != null){
             this.next.setPrevious(nNode);
