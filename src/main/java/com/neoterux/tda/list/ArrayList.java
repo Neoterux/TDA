@@ -356,7 +356,6 @@ public class ArrayList<E> implements MutableList<E> {
         // TODO: test if works
         return new Iterator<>() {
             int pointer = 0;
-
             @Override
             public boolean hasNext() {
                 return pointer < effectiveSize;
@@ -389,7 +388,7 @@ public class ArrayList<E> implements MutableList<E> {
      * Los elementos que retornen 0 se ingresaran a la nueva lista.
      *
      * @param target objeto a comparar con los elementos de la lista.
-     * @param cmp comparador.
+     * @param cmp comparador con el {@literal target} como primer argumento.
      * @return lista con elementos de acuerdo al resultado del comparador.
      */
     @Override
@@ -415,15 +414,14 @@ public class ArrayList<E> implements MutableList<E> {
     public List<E> intersectionWith(List<E> target) {
         // TODO: implement and test
         List<E> tmp = new ArrayList<>();
-        for(var element : this){
-            // No queremos continuar si la lista llega a su fin, es decir cuando es null
-            if (element == null)
-                break;
-            for (var targetElement: target){
-                if (element.equals(targetElement))
-                    tmp.addLast(targetElement);
+        forEach((element) ->{
+            var it = target.iterator();
+            while (it.hasNext()){
+                var current = it.next();
+                if (current.equals(element))
+                    tmp.addLast(current);
             }
-        }
+        });
         return tmp;
     }
 
