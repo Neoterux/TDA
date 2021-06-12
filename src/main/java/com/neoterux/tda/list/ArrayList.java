@@ -359,7 +359,7 @@ public class ArrayList<E> implements MutableList<E> {
 
             @Override
             public boolean hasNext() {
-                return pointer < effectiveSize - 1;
+                return pointer < effectiveSize;
             }
 
             @Override
