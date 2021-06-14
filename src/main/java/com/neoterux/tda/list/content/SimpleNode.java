@@ -2,7 +2,7 @@ package com.neoterux.tda.list.content;
 
 import com.neoterux.tda.containers.Node;
 
-public class SimpleNode<E> extends Node<E> {
+public class SimpleNode<E> extends Node<E, SimpleNode<E>> {
 
     public SimpleNode(E element) {
         this(element, null);
