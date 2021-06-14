@@ -1,15 +1,9 @@
 package com.neoterux.tda.list;
 
-public class LinkedList<E> implements List<E>{
+import java.util.Comparator;
+import java.util.Iterator;
 
-    private Node<E> first;
-
-    private Node<E> last;
-
-    private int effectiveSize;
-
-    public LinkedList() { effectiveSize = 0; }
-
+public class LinkedList<E> implements MutableList<E>{
     @Override
     public boolean addFirst(E e) {
         return false;
@@ -27,6 +21,16 @@ public class LinkedList<E> implements List<E>{
 
     @Override
     public E remove(int index) {
+        return null;
+    }
+
+    @Override
+    public E removeFirst() {
+        return null;
+    }
+
+    @Override
+    public E removeLast() {
         return null;
     }
 
@@ -55,62 +59,33 @@ public class LinkedList<E> implements List<E>{
 
     }
 
+    @Override
+    public List<E> findAll(E target) {
+        return null;
+    }
 
-    private static class Node<E> {
-        Node<E> previus;
-        E content;
-        Node<E> next;
+    @Override
+    public List<E> findAll(E target, Comparator<E> cmp) {
+        return null;
+    }
 
-        Node(E element) {
-            this(element, null, null);
-        }
-        Node(E element, Node<E> previus) {
-            this(element, previus, null);
-        }
-        Node(E element, Node<E> previus, Node<E> next){
-            this.content = element;
-            this.previus = previus;
-            this.next = next;
-        }
+    @Override
+    public List<E> intersectionWith(List<E> target) {
+        return null;
+    }
 
-        public void setNext(Node<E> next) {
-            this.next = next;
-        }
+    @Override
+    public void keepOnly(int from, int to) {
 
-        public void setPrevius(Node<E> previus) {
-            this.previus = previus;
-        }
+    }
 
-        public Node<E> getNext() {
-            return next;
-        }
+    @Override
+    public void detach(int from, int to) {
 
-        public E getContent() {
-            return content;
-        }
+    }
 
-        public Node<E> getPrevius() {
-            return previus;
-        }
-
-        public Node<E> genNext(final E element) {
-            return new Node<>(element, this);
-        }
-
-        public Node<E> genPrevius(final E element) {
-            Node<E> nNode = new Node<>(element, this.previus, this);
-            var prev = nNode.previus;
-            if(prev != null){
-                // clear previus node reference to this, and replace with new node
-                prev.next = nNode;
-            }
-            // now the previus node of this node is the new node
-            this.previus = nNode;
-            return nNode;
-        }
-        public void clearReferences(){
-            this.next = null;
-            this.previus = null;
-        }
+    @Override
+    public Iterator<E> iterator() {
+        return null;
     }
 }
