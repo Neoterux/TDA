@@ -174,6 +174,8 @@ public class ArrayList<E> implements MutableList<E> {
      */
     @Override
     public E get(int index) {
+        if (isEmpty())
+            return null;
         if (index < 0 || index >= effectiveSize) {
             throw new IndexOutOfBoundsException("invalid index");
         }
@@ -315,6 +317,8 @@ public class ArrayList<E> implements MutableList<E> {
      */
     @Override
     public void keepOnly(int from, int to) {
+        checkRanges(from, to);
+
         int top = Math.min(to, effectiveSize - 1);
 
         int originalSize = effectiveSize;
@@ -336,6 +340,8 @@ public class ArrayList<E> implements MutableList<E> {
      */
     @Override
     public void detach(int from, int to) {
+        checkRanges(from, to);
+
         int top = Math.min(to, effectiveSize - 1);
         for (int i = 0; i <= top; i++) {
             if (i >= from && i <= to) {
@@ -344,6 +350,15 @@ public class ArrayList<E> implements MutableList<E> {
             }
         }
         fixArraySpace(elements);
+    }
+
+    private void checkRanges(int from, int to) {
+        if (from > to)
+            throw new IllegalArgumentException("from value must be lower than to");
+        if (from < 0 || to < 0)
+            throw new IllegalArgumentException("Values must me greater than 0");
+        if (from >= effectiveSize)
+            throw new IllegalArgumentException("from must be inside list bounds");
     }
 
     /**
@@ -415,9 +430,7 @@ public class ArrayList<E> implements MutableList<E> {
         // TODO: implement and test
         List<E> tmp = new ArrayList<>();
         forEach((element) ->{
-            var it = target.iterator();
-            while (it.hasNext()){
-                var current = it.next();
+            for (E current : target) {
                 if (current.equals(element))
                     tmp.addLast(current);
             }
