@@ -17,7 +17,7 @@ public class DoubleNode<E> extends Node<E, DoubleNode<E>> {
 
     @Override
     public DoubleNode<E> genNext(E element) {
-        var nNode = new DoubleNode<E>(element, this, this.next);
+        DoubleNode<E> nNode = new DoubleNode<>(element, this, this.next);
 
         if(this.next != null){
             this.next.setPrevious(nNode);
@@ -27,6 +27,13 @@ public class DoubleNode<E> extends Node<E, DoubleNode<E>> {
         return nNode;
     }
 
+    /**
+     * Genera un nuevo nodo en la posición siguiente a este, en caso de existir algun nodo consiguiente a este, el nuevo
+     * nodo desplaza a ese nodo.
+     *
+     * @param element elemento que va a poseer el nuevo nodo.
+     * @return nuevo nodo creado.
+     */
     @Override
     public DoubleNode<E> genPrevius(E element) {
         var nNode = new DoubleNode<>(element, this.previous, this);
@@ -36,10 +43,20 @@ public class DoubleNode<E> extends Node<E, DoubleNode<E>> {
         return nNode;
     }
 
+    /**
+     * Registra / reemplaza un nodo como nodo anterior a este.
+     *
+     * @param previous nodo a colocar como previo.
+     */
     public void setPrevious(DoubleNode<E> previous) {
         this.previous = previous;
     }
 
+    /**
+     * Reemplaza este nodo con uno nuevo, en caso de estar enlazado con algún otro nodo.
+     *
+     * @param element elemento con el que se va a reemplazar
+     */
     public void replaceWith(E element){
         DoubleNode<E> nNode = new DoubleNode<>(element, this.previous, this.next);
         if(this.next != null)
@@ -49,21 +66,20 @@ public class DoubleNode<E> extends Node<E, DoubleNode<E>> {
         this.clean();
     }
 
+    /**
+     * Borra el nodo si se encuentra enlazado con algún otro.
+     */
     public void delete() {
         if(this.previous == this || this.next == this) {
             clean();
             return;
         }
-        if(this.previous != null && this.next != null){
-            this.previous.setNext(this.next);
-            this.next.setPrevious(this.previous);
-        }
 
-        if(previous == null)
-            this.next.setPrevious(null);
-        else if(next == null)
-            this.previous.setNext(null);
-        // if any of the conditions are true, that means that this node is alone
+        if(previous != null)
+            this.previous.setNext(this.next);
+        if (next != null)
+            this.next.setPrevious(this.previous);
+        clean();
     }
 
     @Override
