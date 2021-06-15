@@ -145,6 +145,7 @@ public class SCLinkedList<E> implements MutableList<E>{
     @Override
     public void clear() {
         last = null;
+        effectiveSize = 0;
     }
 
     @Override
