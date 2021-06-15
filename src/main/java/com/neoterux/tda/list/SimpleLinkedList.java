@@ -1,5 +1,9 @@
 package com.neoterux.tda.list;
 
+import com.neoterux.tda.list.content.SimpleNode;
+
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.Objects;
 
 /**
@@ -7,16 +11,16 @@ import java.util.Objects;
  *
  * @param <E> tipo de dato que almacena la lista
  */
-public class SimpleLinkedList<E> implements List<E>{
+public class SimpleLinkedList<E> implements MutableList<E>{
 
     /**
      * Primer objeto en la lista.
      */
-    private NodeSimple<E> header;
+    private SimpleNode<E> header;
     /**
      * Último objeto en la lista.
      */
-    private NodeSimple<E> last;
+    private SimpleNode<E> last;
     /**
      * Se utiliza para no tener que recorrer la lista en caso de querer obtener el tamaño.
      */
@@ -35,7 +39,9 @@ public class SimpleLinkedList<E> implements List<E>{
      */
     @Override
     public boolean addFirst(E e) {
-        NodeSimple<E> nfirst = new NodeSimple<>(e);
+        if (e == null)
+            return false;
+        SimpleNode<E> nfirst = new SimpleNode<>(e);
         if(header != null)
             nfirst.setNext(header);
         else
@@ -54,7 +60,9 @@ public class SimpleLinkedList<E> implements List<E>{
      */
     @Override
     public boolean addLast(E e) {
-        var nNode = new NodeSimple<>(e);
+        if (e == null)
+            return false;
+        var nNode = new SimpleNode<>(e);
         if (header == null) {
             header = nNode;
         }else {
@@ -73,15 +81,16 @@ public class SimpleLinkedList<E> implements List<E>{
      */
     @Override
     public void add(int index, E element) {
+        if(element == null)
+            return;
         Objects.checkIndex(index, effectiveSize);
-        NodeSimple<E> nNode = new NodeSimple<>(element);
+        SimpleNode<E> nNode = new SimpleNode<>(element);
         if(index == 0) {
             nNode.setNext(header);
             header = nNode;
         }else {
-            NodeSimple<E> tmp = getNodeAt(index-1);
-            nNode.setNext(tmp.getNext());
-            tmp.setNext(nNode);
+            SimpleNode<E> tmp = getNodeAt(index-1);
+            tmp.genNext(element);
         }
         effectiveSize++;
     }
@@ -95,18 +104,43 @@ public class SimpleLinkedList<E> implements List<E>{
     public E remove(int index) {
         Objects.checkIndex(index, effectiveSize);
         E removed;
-        if(index == 0 && header != null) {
-            removed = header.getContent();
-            header = header.getNext();
+        if(index == 0) {
+            return removeFirst();
         }else {
-            NodeSimple<E> tmp = getNodeAt(index - 1);
-            removed = tmp.getNext().getContent();
-            tmp.setNext(null);
+            SimpleNode<E> tmp = getNodeAt(index - 1);
+            var nxt = tmp.getNext();
+            removed = nxt.getContent();
+            tmp.setNext(nxt.getNext());
             if(index == effectiveSize -1)
                 last = tmp;
         }
         effectiveSize--;
         return removed;
+
+    }
+
+    @Override
+    public E removeFirst() {
+        if(isEmpty())
+            return null;
+
+        var old = header;
+        if(header == last){
+            this.header = null;
+            this.last = null;
+        }else {
+            header = header.getNext();
+        }
+        effectiveSize--;
+
+        return old.getContent();
+    }
+
+    @Override
+    public E removeLast() {
+        if(isEmpty())
+            return null;
+        return remove(effectiveSize-1);
     }
 
     /**
@@ -120,6 +154,7 @@ public class SimpleLinkedList<E> implements List<E>{
     public E get(int index) {
         if (header == null)
             return null;
+        Objects.checkIndex(index, effectiveSize);
         if (index == 0){
             return header.getContent();
         }else if (index == effectiveSize -1){
@@ -138,8 +173,10 @@ public class SimpleLinkedList<E> implements List<E>{
      */
     @Override
     public E set(int index, E element) {
+        if(element == null)
+            return null;
         Objects.checkIndex(index, effectiveSize);
-        var nNode = new NodeSimple<>(element);
+        var nNode = new SimpleNode<>(element);
         E detached = null;
         if(index == 0){
             nNode.setNext(header.getNext());
@@ -170,7 +207,7 @@ public class SimpleLinkedList<E> implements List<E>{
      */
     @Override
     public boolean isEmpty() {
-        return header == null && last == null;
+        return effectiveSize == 0;
     }
 
     /**
@@ -186,14 +223,71 @@ public class SimpleLinkedList<E> implements List<E>{
         // System.gc();
     }
 
-    private NodeSimple<E> getNodeAt(int index) {
+    /**
+     * Busca en la lista elementos que sean iguales a {@literal target} mediante el método.
+     * equals.
+     *
+     * @param target elemento a buscar.
+     * @return lista con elementos encontrados.
+     */
+    @Override
+    public List<E> findAll(E target) {
+        List<E> tmp = new SimpleLinkedList<>();
+        forEach((item) -> {
+            if(item.equals(target))
+                tmp.addLast(item);
+        });
+        return tmp;
+    }
+
+    /**
+     * Busca elementos a traves de la lista de acuerdo al comparador, para que un objeto sea
+     * identificado como 'igual', el comparador debe devolver 0.
+     *
+     * @param target objeto a comparar
+     * @param cmp comparador con primer parametro el objeto {@literal target}.
+     * @return lista con los elementos encontrados.
+     */
+    @Override
+    public List<E> findAll(E target, Comparator<E> cmp) {
+        List<E> tmp = new SimpleLinkedList<>();
+        forEach((item)->{
+            if(cmp.compare(target, item) == 0)
+                tmp.addLast(item);
+        });
+
+        return tmp;
+    }
+
+    /**
+     * Genera una nueva lista con elementos que contengan en común ambas listas.
+     *
+     * @param target lista a buscar
+     * @return lista con los objetos en común.
+     * @throws NullPointerException si el target es null.
+     */
+    @Override
+    public List<E> intersectionWith(List<E> target) {
+        if (target == null)
+            throw new NullPointerException("Target must not be null");
+        List<E> itr = new SimpleLinkedList<>();
+        forEach((item)->{
+            for (E e : target) {
+                if (e.equals(item))
+                    itr.addLast(item);
+            }
+        });
+        return itr;
+    }
+
+    private SimpleNode<E> getNodeAt(int index) {
         Objects.checkIndex(index, effectiveSize);
         if(index == 0){
             return header;
         }else if (index == effectiveSize -1){
             return last;
         }
-        NodeSimple<E> tmp = header;
+        SimpleNode<E> tmp = header;
         for (int i = 0; i < index; i++) {
             tmp = tmp.getNext();
         }
@@ -206,14 +300,108 @@ public class SimpleLinkedList<E> implements List<E>{
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder("[");
-        var tmp = header;
+        SimpleNode<E> tmp = header;
         for (int i = 0; i < effectiveSize; i++) {
             str.append(tmp.getContent());
-            if (i != effectiveSize -1)
+            if (i < effectiveSize-1)
                 str.append(", ");
             tmp = tmp.getNext();
         }
         str.append("]");
         return str.toString();
+    }
+
+    /**
+     * Modifica la lista y elimina a los objetos que no se encuentren dentro del rango especificado.
+     *
+     * @param from indice desde donde mantener.
+     * @param to indice hasta donde mantener.
+     * @throws IllegalArgumentException si el rango ingresado no es válido.
+     */
+    @Override
+    public void keepOnly(int from, int to) {
+        if (isEmpty())
+            return;
+        checkRange(from, to);
+        to = Math.min(to, effectiveSize-1);
+        int oldSize = effectiveSize;
+        SimpleNode<E> first = header, end = header, detch = header;
+        for (int i = 0; i < oldSize; i++) {
+            if(i < from)
+                first = first.getNext();
+            if(i < to)
+                end = end.getNext();
+            if(i < from || i > to){
+                SimpleNode<E> tmp = detch.getNext();
+                detch.clean();
+                detch = tmp;
+                effectiveSize--;
+            }
+        }
+        header = first;
+        last = end;
+        end.setNext(null);
+    }
+
+    @Override
+    public void detach(int from, int to) {
+        if (isEmpty())
+            return;
+        checkRange(from, to);
+        to = Math.min(to, effectiveSize-1);
+        if(from == 0 && to == effectiveSize-1){
+            clear();
+            return;
+        }
+        SimpleNode<E> first = null, end = null, tmp = header;
+        int osize = effectiveSize;
+        int moves = (to - from) +1;
+        for (int i = 0; i < osize; i++) {
+            if(i < from)
+                first = tmp;
+            if ( i <= to)
+                end = tmp;
+            tmp = tmp.getNext();
+        }
+        if (first == null) // this is that the from index is 0
+            header = end.getNext();
+        else if (end == null || end.getNext() == null){ // that means that we reached the end.
+            last = first;
+            first.setNext(null);
+        }else{
+            first.setNext(end.getNext());
+            if(to == effectiveSize -1)
+                last = end.getNext();
+        }
+
+        effectiveSize -= moves;
+    }
+
+    private void checkRange(int from, int to) {
+        if (from > to)
+            throw new IllegalArgumentException("from must be lower than to");
+        if (from < 0)
+            throw new IndexOutOfBoundsException("from must be >= 0");
+    }
+
+    /**
+     * @return un objeto Iterator.
+     */
+    @Override
+    public Iterator<E> iterator() {
+        return new Iterator<>() {
+            private SimpleNode<E> pointer = header;
+            @Override
+            public boolean hasNext() {
+                return pointer != null;
+            }
+
+            @Override
+            public E next() {
+                var old = pointer;
+                pointer = pointer.getNext();
+                return old.getContent();
+            }
+        };
     }
 }
