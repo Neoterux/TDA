@@ -387,4 +387,28 @@ public class LinkedList<E> implements MutableList<E>{
         return str.toString();
     }
 
+    /**
+     * Re posiciona el puntero del último elemento n-cantidad de posiciones.
+     * Al final de la operación la lista coloca como último elemento aquel que
+     * se encuentre en el puntero.
+     *
+     * @param times n-cantidad de rotaciones, si es negativo se rota desde el último elemento
+     *              hacia atrás.
+     */
+    public void rotate(int times) {
+        if(times == 0 || size() == 0){
+            return; // do nothing when times is 0 or the list is empty
+        }
+        boolean reverse = times < 0;
+        // this will reduce the numbers of iterations to the size of the list
+        times = Math.abs(times) % size();
+
+        while (times > 0){
+            if (reverse){
+                this.last = this.last.getPrevious();
+            }else
+                this.last = this.last.getNext();
+            times--;
+        }
+    }
 }
