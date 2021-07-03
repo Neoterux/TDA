@@ -30,4 +30,9 @@ public class SimpleNode<E> extends Node<E, SimpleNode<E>> {
     public SimpleNode<E> genPrevius(E element) {
         return new SimpleNode<>(element, this);
     }
+
+    @Override
+    public String toString() {
+        return "e: "+content;
+    }
 }
