@@ -217,7 +217,7 @@ public class LinkedList<E> implements MutableList<E>{
      * de acuerdo a la implementación del método {@code equals} de los objetos de tipo {@link E}.
      *
      * @param target Lista con elementos a comparar.
-     * @return Lista con items de donde fue invocado que hayan cumplido las condiciones del equals {@see E#equals}.
+     * @return Lista con items de donde fue invocado que hayan cumplido las condiciones del equals {@link E#equals}.
      */
     @Override
     public List<E> intersectionWith(List<E> target) {
@@ -231,7 +231,7 @@ public class LinkedList<E> implements MutableList<E>{
      *
      * @param targetList Lista con elementos a comparar.
      * @param cmp Comparador que dicta que elementos son iguales (return 0).
-     * @return Lista con items de donde fue invocado que hayan cumplido las condiciones del equals {@see E#equals}.
+     * @return Lista con items de donde fue invocado que hayan cumplido las condiciones del equals {@link E#equals}.
      */
     public List<E> intersectionWith(List<E> targetList, Comparator<E> cmp){
         if(cmp == null)

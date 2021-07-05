@@ -408,7 +408,6 @@ public class ArrayList<E> implements MutableList<E> {
      */
     @Override
     public List<E> findAll(E target, Comparator<E> cmp) {
-        // TODO: implement and test
         List<E> tmp = new ArrayList<>();
         for (int i = 0; i < effectiveSize; i++) {
             if (cmp.compare(target, elements[i]) == 0)
@@ -427,7 +426,6 @@ public class ArrayList<E> implements MutableList<E> {
      */
     @Override
     public List<E> intersectionWith(List<E> target) {
-        // TODO: implement and test
         List<E> tmp = new ArrayList<>();
         forEach((element) ->{
             for (E current : target) {
