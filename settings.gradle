@@ -1,0 +1,2 @@
+rootProject.name = 'tda'
+include(':tda-ktx')
