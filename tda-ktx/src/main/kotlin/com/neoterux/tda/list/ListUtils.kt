@@ -1,5 +1,6 @@
 @file: JvmName("LstUtils")
 package com.neoterux.tda.list
+import com.neoterux.tda.list.*
 
 /**
  * Suma los números de tipo [java.lang.Integer] en la lista
