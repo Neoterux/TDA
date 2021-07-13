@@ -5,6 +5,8 @@ import com.neoterux.tda.list.content.DoubleNode;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Objects;
+import static java.lang.Math.max;
+import static java.lang.Math.abs;
 
 public class LinkedList<E> implements MutableList<E>{
 
@@ -346,12 +348,17 @@ public class LinkedList<E> implements MutableList<E>{
     private DoubleNode<E> getNodeAt(int idx){
         if (idx >= effectiveSize || (idx + effectiveSize) < 0)
             throw new IndexOutOfBoundsException("index not valid");
+        if(idx < 0){ // fix index
+            idx += effectiveSize;
+        }
         DoubleNode<E> target = last;
-        int mid = Math.floorDiv(effectiveSize, 2);
+        int mid = Math.floorDiv(max(effectiveSize-1, 0), 2);
         boolean reverse = (idx > mid) || (idx + effectiveSize > mid && idx < 0);
-        int n_moves = Math.abs(idx + 1);
+        int n_moves = abs(idx + 1);
+//        if(reverse)
+//            n_moves = effectiveSize - n_moves-1;
         if(idx > 0 && reverse)
-            n_moves = n_moves - mid;
+            n_moves = effectiveSize - n_moves;
         for (int i = 0; i < n_moves; i++) {
             if(reverse)
                 target = target.getPrevious();
